@@ -36,7 +36,7 @@ os.makedirs(SESSIONS_DIR, exist_ok=True)
 BOT_SESSION = os.path.join(DATA_DIR, "bot_control_session")
 
 # غيّر هذا إلى اسم قناتك الحقيقي.
-CHANNEL_USERNAME = "@YourChannelUsername"
+CHANNEL_USERNAME = "@https://t.me/zaaad4ever"
 
 FONTS = {
     "1": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
