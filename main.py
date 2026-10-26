@@ -5,7 +5,6 @@ import os
 from zoneinfo import ZoneInfo
 
 from telethon import TelegramClient, events, Button
-from telethon.sessions import StringSession
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.errors import FloodWaitError, SessionPasswordNeededError, UserNotParticipantError
@@ -24,17 +23,19 @@ os.makedirs(SESSIONS_DIR, exist_ok=True)
 CHANNEL_USERNAME = "@YourChannelUsername"
 
 FONTS = {
-    "1": {"name": "🟪 النمط الأول (𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿)", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
-    "2": {"name": "🟦 النمط الثاني ( Scholz 𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗 )", "digits": "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"},
-    "3": {"name": "🟩 النمط الثالث (🟨🟫🟪 🟨 🟪 🟫)", "digits": "🟨🟫🟪🟨🟪🟫⬛⬜🟥🟦"},
-    "4": {"name": "🄲🄾🄾🄻 النمط الرابع (⓪①②③④⑤⑥⑦⑧⑨)", "digits": "⓪①②③④⑤⑥⑦⑧⑨"}
+    "1": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
+    "2": {"name": " \%)$.-$/0123", "digits": "%.).-$/0123"},
+    "3": {"name": "𝘒𝘜𝘙𝘋𝘐𝘚𝘏 (𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫)", "digits": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫"},
+    "4": {"name": "🄲🄾🄾🄻 (⓪①②③④⑤⑥⑦⑧⑨)", "digits": "⓪①②③④⑤⑥⑦⑧⑨"}
 }
 
+FONTS["2"] = {"name": "0123456789", "digits": "0123456789"} # Fix any display/copy errors
+# Let's ensure accurate mathematical alphanumeric symbols
 FONTS = {
-    "1": {"name": "🟪 النمط الأول (𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿)", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
-    "2": {"name": "🟦 النمط الثاني (𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩🟪🟪)", "digits": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫"},
-    "3": {"name": "🟩 النمط الثالث (𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟲𝟕)", "digits": "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"},
-    "4": {"name": "🄲🄾🄾🄻 النمط الرابع (⓪①②③④⑤⑥⑦⑧⑨)", "digits": "⓪①②③④⑤⑥⑦⑧⑨"}
+    "1": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
+    "2": {"name": "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗", "digits": "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"},
+    "3": {"name": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫", "digits": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫"},
+    "4": {"name": "⓪①②③④⑤⑥⑦⑧⑨", "digits": "⓪①②③④⑤⑥⑦⑧⑨"}
 }
 
 def load_data():
@@ -66,6 +67,9 @@ def get_user(user_id):
             "accounts": []
         }
         save_data()
+    if "font_type" not in users[key]:
+        users[key]["font_type"] = "1"
+        save_data()
     return users[key]
 
 def to_fancy_digits(text, font_type):
@@ -90,7 +94,7 @@ async def check_subscription(event):
             return True
     return True
 
-async def account_time_loop(session_key, client, user_id):
+async def account_time_loop(phone_number, client, user_id):
     last_time = ""
     try:
         while True:
@@ -99,11 +103,11 @@ async def account_time_loop(session_key, client, user_id):
                     await client.connect()
 
                 user = get_user(user_id)
-                if session_key not in user["accounts"]:
+                if phone_number not in user["accounts"]:
                     break
 
                 raw_time = datetime.datetime.now(ZoneInfo("Africa/Algiers")).strftime("%H:%M")
-                fancy_time = to_fancy_digits(raw_time, user.get("font_type", "1"))
+                fancy_time = to_fancy_digits(raw_time, user["font_type"])
 
                 if fancy_time != last_time:
                     new_name = f"{user['base_name']} {fancy_time}"
@@ -125,27 +129,24 @@ async def account_time_loop(session_key, client, user_id):
 async def load_saved_sessions():
     await asyncio.sleep(2)
     for user_id, user_data in users.items():
-        for session_entry in user_data.get("accounts", []):
-            try:
-                if session_entry.startswith("1") and len(session_entry) > 40:
-                    client = TelegramClient(StringSession(session_entry), API_ID, API_HASH, auto_reconnect=True)
-                else:
-                    session_path = os.path.join(SESSIONS_DIR, session_entry)
+        for phone in user_data.get("accounts", []):
+            session_path = os.path.join(SESSIONS_DIR, phone)
+            if os.path.exists(session_path + ".session"):
+                try:
                     client = TelegramClient(session_path, API_ID, API_HASH, auto_reconnect=True)
-
-                await client.connect()
-                if await client.is_user_authorized():
-                    running_accounts[session_entry] = asyncio.create_task(
-                        account_time_loop(session_entry, client, int(user_id))
-                    )
-                else:
-                    await client.disconnect()
-            except Exception:
-                pass
+                    await client.connect()
+                    if await client.is_user_authorized():
+                        running_accounts[phone] = asyncio.create_task(
+                            account_time_loop(phone, client, int(user_id))
+                        )
+                    else:
+                        await client.disconnect()
+                except Exception:
+                    pass
 
 def make_main_keyboard():
     return [
-        [Button.inline("➕ إضافة حساب", b"menu_choose_method"), Button.inline("⚙️ أنواع الزخرفات", b"menu_fonts")],
+        [Button.inline("➕ إضافة حساب", b"menu_add"), Button.inline("⚙️ أنواع الزخرفات", b"menu_fonts")],
         [Button.inline("📝 تغيير الاسم", b"menu_name"), Button.inline("📊 الحسابات المتصلة", b"menu_status")],
         [Button.inline("🛑 إيقاف حساب", b"menu_stop")]
     ]
@@ -156,9 +157,7 @@ async def start_handler(event):
         return
     get_user(event.sender_id)
     await event.reply(
-        "🤖 **أهلاً بك في بوت إدارة حسابات الوقت المتطور**
-
-"
+        "🤖 **أهلاً بك في بوت إدارة حسابات الوقت المتطور**\n\n"
         "يمكنك التحكم بكل سهولة عبر الأزرار أدناه:",
         buttons=make_main_keyboard()
     )
@@ -166,62 +165,23 @@ async def start_handler(event):
 @bot.on(events.CallbackQuery(pattern=r"^menu_main$"))
 async def menu_main_callback(event):
     await event.edit(
-        "🤖 **لوحة التحكم الرئيسية**
-
-"
+        "🤖 **لوحة التحكم الرئيسية**\n\n"
         "إختر الإجراء المطلوب من الأزرار المتاحة:",
         buttons=make_main_keyboard()
-    )
-
-@bot.on(events.CallbackQuery(pattern=r"^menu_choose_method$"))
-async def menu_choose_method_callback(event):
-    await event.edit(
-        "➕ **إختر طريقة إضافة الحساب المناسبة:**
-
-"
-        "💡 _ملاحظة: بالنسبة للحسابات المحمية بكلمة مرور إضافية، يرجى استخدام طريقة الـ Session لضمان تخطي قيود الرمز._",
-        buttons=[
-            [Button.inline("📱 عبر الرقم والرمز مباشرة", b"menu_add_phone")],
-            [Button.inline("🔑 عبر كود الجلسة (StringSession)", b"menu_add_session")],
-            [Button.inline("🔙 عودة للرئيسية", b"menu_main")]
-        ]
-    )
-
-@bot.on(events.CallbackQuery(pattern=r"^menu_add_session$"))
-async def menu_add_session_callback(event):
-    login_states[event.sender_id] = {"step": "string_session"}
-    await event.edit(
-        "🔑 **إضافة حساب عبر الـ StringSession:**
-
-"
-        "أرسل كود الجلسة الخاص بحسابك الآن مباشرة في رسالة عادية.",
-        buttons=[Button.inline("🔙 إلغاء", b"menu_main")]
-    )
-
-@bot.on(events.CallbackQuery(pattern=r"^menu_add_phone$"))
-async def menu_add_phone_callback(event):
-    login_states[event.sender_id] = {"step": "phone"}
-    await event.edit(
-        "📱 **بدء إضافة حساب جديد عبر الرقم:**
-
-"
-        "أرسل رقم الهاتف المراد ربطه مع رمز الدولة الآن في رسالة عادية.
-"
-        "مثال: `+213xxxxxxxxx`",
-        buttons=[Button.inline("🔙 إلغاء", b"menu_main")]
     )
 
 @bot.on(events.CallbackQuery(pattern=r"^menu_fonts$"))
 async def menu_fonts_callback(event):
     user = get_user(event.sender_id)
-    current_font = user.get("font_type", "1")
+    current_font = user["font_type"]
     
     buttons = []
     for fid, font in FONTS.items():
         text = f"✅ {font['name']}" if fid == current_font else font['name']
         buttons.append([Button.inline(text, f"set_font_{fid}".encode())])
     buttons.append([Button.inline("🔙 عودة", b"menu_main")])
-    await event.edit("⚙️ **قائمة الزخرفات المتاحة للأرقام:**", buttons=buttons)
+    
+    await event.edit("⚙️ **قائمة الزخرفات المتاحة للأرقام:**\nإختر النمط الذي يناسبك ليعتمد لجميع حساباتك:", buttons=buttons)
 
 @bot.on(events.CallbackQuery(pattern=r"^set_font_(\d+)$"))
 async def set_font_callback(event):
@@ -235,17 +195,17 @@ async def set_font_callback(event):
         text = f"✅ {font['name']}" if fid == font_id else font['name']
         buttons.append([Button.inline(text, f"set_font_{fid}".encode())])
     buttons.append([Button.inline("🔙 عودة", b"menu_main")])
-    await event.edit("⚙️ **قائمة الزخرفات المتاحة للأرقام:**", buttons=buttons)
+    
+    await event.edit("⚙️ **قائمة الزخرفات المتاحة للأرقام:**\nإختر النمط الذي يناسبك ليعتمد لجميع حساباتك:", buttons=buttons)
 
 @bot.on(events.CallbackQuery(pattern=r"^menu_name$"))
 async def menu_name_callback(event):
     user = get_user(event.sender_id)
     login_states[event.sender_id] = {"step": "change_name_input"}
     await event.edit(
-        f"📝 **الاسم الحالي المعتمد:** {user['base_name']}
-
-"
-        "أرسل الآن الاسم الجديد الذي تريده في رسالة عادية.",
+        f"📝 **الاسم الحالي المعتمد:** {user['base_name']}\n\n"
+        "أرسل الآن الاسم الجديد الذي تريده (مثلاً: `Z` أو اسمك الخاص) في رسالة عادية.\n"
+        "أو أرسل `/start` لإلغاء العملية.",
         buttons=[Button.inline("🔙 إلغاء وعودة", b"menu_main")]
     )
 
@@ -254,17 +214,11 @@ async def menu_status_callback(event):
     user = get_user(event.sender_id)
     accounts = user.get("accounts", [])
     if not accounts:
-        text = "📊 **الحسابات المتصلة:**
-
-لا توجد حسابات مرتبطة بنظامك حالياً."
+        text = "📊 **الحسابات المتصلة:**\n\nلا توجد حسابات مرتبطة بنظامك حالياً."
     else:
-        text = "📊 **الحسابات المتصلة حالياً والمحدثة للوقت:**
-
-"
+        text = "📊 **الحسابات المتصلة حالياً والمحدثة للوقت:**\n\n"
         for idx, acc in enumerate(accounts, 1):
-            display = acc if len(acc) < 25 else f"الحساب {idx} (عبر الجلسة)"
-            text += f"{idx}️⃣ الحساب: `{display}`
-"
+            text += f"{idx}️⃣ الرقم: `{acc}`\n"
             
     await event.edit(text, buttons=[Button.inline("🔙 عودة", b"menu_main")])
 
@@ -277,37 +231,44 @@ async def menu_stop_callback(event):
         return
         
     buttons = []
-    for idx, acc in enumerate(accounts, 1):
-        display = acc if len(acc) < 25 else f"الحساب {idx} (عبر الجلسة)"
-        buttons.append([Button.inline(f"❌ إيقاف: {display}", f"action_stop_{idx}".encode())])
+    for acc in accounts:
+        buttons.append([Button.inline(f"❌ إيقاف الحساب: {acc}", f"action_stop_{acc}".encode())])
     buttons.append([Button.inline("🔙 عودة", b"menu_main")])
     await event.edit("🛑 **إختر الحساب المراد إيقافه وحذفه نهائياً:**", buttons=buttons)
 
-@bot.on(events.CallbackQuery(pattern=r"^action_stop_(\d+)$"))
+@bot.on(events.CallbackQuery(pattern=r"^action_stop_(.+)$"))
 async def action_stop_callback(event):
-    idx_str = event.pattern_match.group(1).decode()
-    idx = int(idx_str) - 1
+    phone = event.pattern_match.group(1).decode()
     user = get_user(event.sender_id)
-    accounts = user.get("accounts", [])
     
-    if 0 <= idx < len(accounts):
-        target = accounts[idx]
-        accounts.remove(target)
+    if phone in user.get("accounts", []):
+        user["accounts"].remove(phone)
         save_data()
         
-        if target in running_accounts:
-            running_accounts[target].cancel()
-            del running_accounts[target]
+    if phone in running_accounts:
+        running_accounts[phone].cancel()
+        del running_accounts[phone]
+        
+    session_file = os.path.join(SESSIONS_DIR, f"{phone}.session")
+    if os.path.exists(session_file):
+        try:
+            os.remove(session_file)
+        except:
+            pass
             
-        if not (target.startswith("1") and len(target) > 40):
-            session_file = os.path.join(SESSIONS_DIR, f"{target}.session")
-            if os.path.exists(session_file):
-                try: os.remove(session_file)
-                except: pass
-                
-        await event.edit("🛑 تم إيقاف وحذف الحساب بنجاح.", buttons=[Button.inline("🔙 عودة إلى التحكم", b"menu_main")])
-    else:
-        await event.edit("❌ حدث خطأ، الحساب غير موجود.", buttons=[Button.inline("🔙 عودة", b"menu_main")])
+    await event.edit(f"🛑 تم إيقاف وحذف الحساب `{phone}` بنجاح.", buttons=[Button.inline("🔙 عودة إلى التحكم", b"menu_main")])
+
+@bot.on(events.CallbackQuery(pattern=r"^menu_add$"))
+async def menu_add_callback(event):
+    if not await check_subscription(event):
+        return
+    login_states[event.sender_id] = {"step": "phone"}
+    await event.edit(
+        "📱 **بدء إضافة حساب جديد:**\n\n"
+        "أرسل رقم الهاتف المراد ربطه مع رمز الدولة الآن في رسالة عادية.\n"
+        "مثال: `+213xxxxxxxxx`",
+        buttons=[Button.inline("🔙 إلغاء", b"menu_main")]
+    )
 
 @bot.on(events.NewMessage)
 async def global_text_handler(event):
@@ -334,38 +295,6 @@ async def global_text_handler(event):
         del login_states[chat_id]
         await event.reply(f"✅ تم تعديل الاسم بنجاح إلى: {user_input}", buttons=make_main_keyboard())
 
-    elif state["step"] == "string_session":
-        session_str = user_input
-        user = get_user(chat_id)
-        if session_str in user["accounts"]:
-            await event.reply("⚠️ هذا الحساب مرتبط لديك بالفعل!")
-            del login_states[chat_id]
-            return
-            
-        status_msg = await event.reply("⏳ جاري التحقق من الـ StringSession وربطه...")
-        try:
-            client = TelegramClient(StringSession(session_str), API_ID, API_HASH, auto_reconnect=True)
-            await client.connect()
-            if not await client.is_user_authorized():
-                await status_msg.delete()
-                await event.reply("❌ الـ StringSession غير صالح أو منتهي الصلاحية.")
-                await client.disconnect()
-                del login_states[chat_id]
-                return
-                
-            user["accounts"].append(session_str)
-            save_data()
-            
-            running_accounts[session_str] = asyncio.create_task(account_time_loop(session_str, client, chat_id))
-            me = await client.get_me()
-            await status_msg.delete()
-            await event.reply(f"✅ **تم ربط وتشغيل الحساب بنجاح!**
-👤 حساب: {me.first_name}", buttons=make_main_keyboard())
-            del login_states[chat_id]
-        except Exception as e:
-            await event.reply(f"❌ فشل الاتصال عبر الجلسة: {e}")
-            del login_states[chat_id]
-
     elif state["step"] == "phone":
         phone = user_input
         user = get_user(chat_id)
@@ -388,9 +317,7 @@ async def global_text_handler(event):
             await status_msg.delete()
             await event.reply("📩 تم إرسال رمز التحقق من تيليغرام. يرجى كتابة الرمز وإرساله هنا:")
         except Exception as e:
-            await event.reply(f"❌ لم يرسل الرمز. قد يكون الحساب محمياً بـ 2FA أو توجد قيود أمنية.
-ينصح بشدة باستخدام خيار StringSession لتخطي هذه المشكلة.
-الخطأ: {e}")
+            await event.reply(f"❌ حدث خطأ أثناء طلب الرمز: {e}\nتم إلغاء العملية.")
             await client.disconnect()
             del login_states[chat_id]
 
@@ -411,18 +338,15 @@ async def global_text_handler(event):
             running_accounts[phone] = asyncio.create_task(account_time_loop(phone, client, chat_id))
             me = await client.get_me()
             await status_msg.delete()
-            await event.reply(f"✅ **تم ربط وتشغيل الحساب بنجاح!**
-👤 حساب: {me.first_name}", buttons=make_main_keyboard())
+            await event.reply(f"✅ **تم ربط وتشغيل الحساب بنجاح!**\n👤 حساب: {me.first_name}", buttons=make_main_keyboard())
             del login_states[chat_id]
             
         except SessionPasswordNeededError:
             state["step"] = "password"
             await status_msg.delete()
-            await event.reply("🔒 هذا الحساب محمي بالتحقق بخطوتين.
-يرجى إرسال كلمة المرور الخاصة بالحساب:")
+            await event.reply("🔒 هذا الحساب محمي بالتحقق بخطوتين.\nيرجى إرسال كلمة المرور الخاصة بالحساب:")
         except Exception as e:
-            await event.reply(f"❌ الرمز خاطئ أو حدثت مشكلة: {e}
-تم إلغاء العملية.")
+            await event.reply(f"❌ الرمز خاطئ أو حدثت مشكلة: {e}\nتم إلغاء العملية.")
             await client.disconnect()
             del login_states[chat_id]
 
@@ -442,16 +366,14 @@ async def global_text_handler(event):
             running_accounts[phone] = asyncio.create_task(account_time_loop(phone, client, chat_id))
             me = await client.get_me()
             await status_msg.delete()
-            await event.reply(f"✅ **تم ربط وتشغيل الحساب بنجاح!**
-👤 حساب: {me.first_name}", buttons=make_main_keyboard())
+            await event.reply(f"✅ **تم ربط وتشغيل الحساب بنجاح!**\n👤 حساب: {me.first_name}", buttons=make_main_keyboard())
             del login_states[chat_id]
         except Exception as e:
-            await event.reply(f"❌ كلمة المرور خاطئة أو حدث خطأ: {e}
-تم إلغاء العملية.")
+            await event.reply(f"❌ كلمة المرور خاطئة أو حدث خطأ: {e}\nتم إلغاء العملية.")
             await client.disconnect()
             del login_states[chat_id]
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(load_saved_sessions())
     bot.start(bot_token=BOT_TOKEN)
