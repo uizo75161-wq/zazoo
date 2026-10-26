@@ -35,8 +35,21 @@ SESSIONS_DIR = os.path.join(DATA_DIR, "user_sessions")
 os.makedirs(SESSIONS_DIR, exist_ok=True)
 BOT_SESSION = os.path.join(DATA_DIR, "bot_control_session")
 
-# غيّر هذا إلى اسم قناتك الحقيقي.
-CHANNEL_USERNAME = "@https://t.me/zaaad4ever"
+# ضع اسم القناة العامة في Railway Variables، مثال: CHANNEL_USERNAME=@my_channel
+# يمكن أيضاً وضع رابط القناة العام https://t.me/my_channel.
+CHANNEL_USERNAME = os.getenv("CHANNEL_USERNAME", "").strip()
+
+def normalize_channel_username(value):
+    value = (value or "").strip()
+    if not value:
+        return ""
+    value = re.sub(r"^https?://t\.me/", "", value, flags=re.IGNORECASE).strip("/ ")
+    value = value.split("?")[0].strip()
+    if value and not value.startswith("@"): 
+        value = "@" + value
+    return value
+
+CHANNEL_USERNAME = normalize_channel_username(CHANNEL_USERNAME)
 
 FONTS = {
     "1": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
@@ -133,19 +146,60 @@ async def close_login_state(user_id):
 async def check_subscription(event):
     if not event.is_private:
         return True
+
+    # لا تحاول الاتصال باسم افتراضي؛ اعرض إعداداً واضحاً في حال نسيان المتغير.
+    if not CHANNEL_USERNAME or CHANNEL_USERNAME.lower() == "@yourchannelusername":
+        print("إعداد مفقود: أضف CHANNEL_USERNAME في Railway Variables، مثال @my_channel")
+        await event.reply(
+            "⚠️ لم يتم إعداد قناة الاشتراك في البوت.\n\n"
+            "في Railway افتح Variables وأضف CHANNEL_USERNAME بقيمة اسم القناة العامة، "
+            "مثال: `@my_channel`، ثم أعد النشر."
+        )
+        return False
+
     try:
         await bot(GetParticipantRequest(channel=CHANNEL_USERNAME, participant=event.sender_id))
         return True
     except UserNotParticipantError:
-        url = f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}"
+        channel_link = f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}"
+        buttons = [
+            [Button.url("📢 اشترك في القناة", channel_link)],
+            [Button.inline("✅ تحقّق من الاشتراك", b"check_subscription")],
+        ]
         await event.reply(
-            "📢 **عذراً، يجب عليك الاشتراك في القناة أولاً لاستخدام البوت!**",
-            buttons=[Button.url("اضغط هنا للاشتراك", url)],
+            "🔒 **لاستخدام البوت، يجب الاشتراك في قناة البوت أولاً.**\n\n"
+            "1) اضغط «اشترك في القناة».\n"
+            "2) اشترك، ثم ارجع إلى هنا واضغط «تحقّق من الاشتراك».\n\n"
+            "إذا كنت مشتركاً وما زال التحقق يفشل، يجب التأكد أن البوت مضاف إلى القناة كمشرف.",
+            buttons=buttons,
         )
         return False
     except Exception as exc:
-        print(f"خطأ فحص الاشتراك: {type(exc).__name__}: {exc}")
-        await event.reply("⚠️ تعذر التحقق من اشتراك القناة حالياً. تحقق من اسم القناة وصلاحيات البوت.")
+        error_name = type(exc).__name__
+        print(f"خطأ فحص الاشتراك للقناة {CHANNEL_USERNAME}: {error_name}: {exc}")
+
+        if error_name == "ChatAdminRequiredError":
+            message = (
+                "⚠️ البوت ليس مشرفاً في قناة الاشتراك أو ليس لديه صلاحية فحص الأعضاء.\n\n"
+                "أضف البوت إلى القناة كمشرف، ثم أعد تجربة /start."
+            )
+        elif error_name in ("UsernameInvalidError", "UsernameNotOccupiedError", "ChannelInvalidError"):
+            message = (
+                "⚠️ اسم قناة الاشتراك غير صحيح أو القناة غير عامة.\n\n"
+                "راجع قيمة CHANNEL_USERNAME في Railway Variables واكتب اسم القناة العامة "
+                "مثل `@my_channel` بدون رابط دعوة خاص."
+            )
+        elif error_name == "ChannelPrivateError":
+            message = (
+                "⚠️ البوت لا يستطيع الوصول إلى هذه القناة. تأكد أن القناة عامة وأن البوت أُضيف إليها كمشرف."
+            )
+        else:
+            message = (
+                f"⚠️ تعذر التحقق من اشتراك القناة ({error_name}).\n\n"
+                "راجع Logs في Railway؛ تأكد من اسم القناة وأن البوت مشرف فيها."
+            )
+
+        await event.reply(message)
         return False
 
 
@@ -235,6 +289,46 @@ async def start_handler(event):
     get_user(event.sender_id)
     await event.reply(
         "🤖 **أهلاً بك في بوت إدارة حسابات الوقت**\n\nيمكنك التحكم عبر الأزرار أدناه:",
+        buttons=make_main_keyboard(),
+    )
+
+
+@bot.on(events.CallbackQuery(pattern=b"^check_subscription$"))
+async def check_subscription_callback(event):
+    """أعد فحص الاشتراك عند ضغط المستخدم على زر التحقق."""
+    if not CHANNEL_USERNAME or CHANNEL_USERNAME.lower() == "@yourchannelusername":
+        await event.answer("لم يتم إعداد CHANNEL_USERNAME في Railway Variables.", alert=True)
+        return
+    try:
+        await bot(GetParticipantRequest(channel=CHANNEL_USERNAME, participant=event.sender_id))
+    except UserNotParticipantError:
+        channel_link = f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}"
+        await event.answer("لم يظهر اشتراكك بعد. اشترك في القناة ثم أعد المحاولة.", alert=True)
+        try:
+            await event.edit(
+                "🔒 **يجب الاشتراك في القناة أولاً لاستخدام البوت.**\n\n"
+                "اشترك في القناة، ثم اضغط «تحقّق من الاشتراك». ",
+                buttons=[
+                    [Button.url("📢 اشترك في القناة", channel_link)],
+                    [Button.inline("✅ تحقّق من الاشتراك", b"check_subscription")],
+                ],
+            )
+        except Exception:
+            pass
+        return
+    except Exception as exc:
+        name = type(exc).__name__
+        print(f"خطأ إعادة فحص الاشتراك في {CHANNEL_USERNAME}: {name}: {exc}")
+        if name in ("ChatAdminRequiredError", "ChannelPrivateError"):
+            msg = "لا يستطيع البوت فحص أعضاء القناة. أضف البوت كمشرف في القناة العامة ثم جرّب مجدداً."
+        else:
+            msg = f"تعذّر فحص الاشتراك ({name}). تأكد من CHANNEL_USERNAME وأن البوت مشرف في القناة."
+        await event.answer(msg, alert=True)
+        return
+
+    await event.answer("تم التحقق من اشتراكك ✅")
+    await event.edit(
+        "🤖 **أهلاً بك في بوت إدارة حسابات الوقت**\n\nتم التحقق من اشتراكك. يمكنك استخدام الأزرار أدناه:",
         buttons=make_main_keyboard(),
     )
 
