@@ -367,7 +367,7 @@ async def name_edit_callback(event):
     await event.edit(
         f"Account: {phone}\n"
         f"Current Name: {current_name}\n\n"
-        "Send the new base name in a normal text message (Max 40 characters).\nSend /start to cancel.",
+        "Send the new base name in a normal text message (Max 40 characters)\nSend /start to cancel.",
         buttons=[Button.inline("Cancel", b"menu_name_select")],
     )
 
@@ -433,8 +433,8 @@ async def menu_add_callback(event):
     login_states[event.sender_id] = {"step": "phone"}
     await event.edit(
         "Add New Account\n\n"
-        "Send the phone number in international format, e.g., +213XXXXXXXXX.\n\n"
-        "Note: Telegram decides how the code is sent. Check your active Telegram apps.",
+        "Send the phone number in international format, e.g., +213799#####\n\n"
+        
         buttons=[Button.inline("Cancel", b"menu_main")],
     )
 
@@ -540,11 +540,11 @@ async def global_text_handler(event):
             return
         except PhoneCodeExpiredError:
             await close_login_state(chat_id)
-            await event.reply("Code expired. Please request a new code.", buttons=make_main_keyboard())
+            await event.reply("Code expired  request a new code", buttons=make_main_keyboard())
             return
         except SessionPasswordNeededError:
             state["step"] = "password"
-            await event.reply("Two-step verification password is required. Please send your password:")
+            await event.reply("Two-step verification password is required...  send your password:")
             return
         except Exception as exc:
             await close_login_state(chat_id)
@@ -560,7 +560,7 @@ async def global_text_handler(event):
         task = asyncio.create_task(account_time_loop(phone, client, chat_id))
         running_accounts[phone] = task
         login_states.pop(chat_id, None)
-        await event.reply(f"Account linked and started successfully. You can now customize its name from the dashboard.", buttons=make_main_keyboard())
+        await event.reply(f"Account linked and started successfully. You can now customize its name from the dashboard", buttons=make_main_keyboard())
         return
 
     if state["step"] == "password":
