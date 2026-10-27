@@ -254,14 +254,14 @@ async def start_handler(event):
 
 @bot.on(events.CallbackQuery(pattern=b"^check_subscription$"))
 async def check_subscription_callback(event):
-    if not CHANNEL_USERNAME or CHANNEL_USERNAME.lower() == "@yourchannelusername":
+    if not CHANNEL_USERNAME or CHANNEL_USERNAME.lower() == "@zadneverdie":
         await event.answer("CHANNEL_USERNAME configuration missing.", alert=True)
         return
     try:
         await bot(GetParticipantRequest(channel=CHANNEL_USERNAME, participant=event.sender_id))
     except UserNotParticipantError:
         channel_link = f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}"
-        await event.answer("Subscription not found. Join the channel first.", alert=True)
+        await event.answer("Subscription not found. Join the channel first...", alert=True)
         try:
             await event.edit(
                 "You must join our channel to use this bot.\n\nSubscribe and press Verify Subscription.",
@@ -274,12 +274,12 @@ async def check_subscription_callback(event):
             pass
         return
     except Exception as exc:
-        await event.answer("Verification failed. Please contact support.", alert=True)
+        await event.answer("Verification failed.  contact support...", alert=True)
         return
 
     await event.answer("Subscription verified")
     await event.edit(
-        "Welcome to Time Account Manager Bot\n\nSubscription verified. You can use the buttons below:",
+        "Welcome to Time Account Manager Bot\n\nSubscription verified... You can use the buttons below:",
         buttons=make_main_keyboard(),
     )
 
@@ -338,7 +338,7 @@ async def menu_name_select_callback(event):
     accounts = user.get("accounts", [])
 
     if not accounts:
-        await event.edit("No linked accounts available to rename. Please add an account first.", buttons=[Button.inline("Back", b"menu_main")])
+        await event.edit("No linked accounts available to rename. Please add an account first...", buttons=[Button.inline("Back", b"menu_main")])
         return
 
     buttons = []
@@ -367,7 +367,7 @@ async def name_edit_callback(event):
     await event.edit(
         f"Account: {phone}\n"
         f"Current Name: {current_name}\n\n"
-        "Send the new base name in a normal text message (Max 40 characters)\nSend /start to cancel.",
+        "Send the new base name in a normal text message (Max 40 characters).\nSend /start to cancel",
         buttons=[Button.inline("Cancel", b"menu_name_select")],
     )
 
@@ -390,7 +390,7 @@ async def menu_stop_callback(event):
     user = get_user(event.sender_id)
     accounts = user.get("accounts", [])
     if not accounts:
-        await event.edit("No linked accounts available to stop.", buttons=[Button.inline("Back", b"menu_main")])
+        await event.edit("No linked accounts available to stop", buttons=[Button.inline("Back", b"menu_main")])
         return
     buttons = [[Button.inline(f"Stop: {acc}"[:60], f"action_stop_{acc}".encode())] for acc in accounts]
     buttons.append([Button.inline("Back", b"menu_main")])
@@ -401,7 +401,7 @@ async def action_stop_callback(event):
     phone = event.pattern_match.group(1).decode()
     user = get_user(event.sender_id)
     if phone not in user.get("accounts", []):
-        await event.answer("This account does not belong to you.", alert=True)
+        await event.answer("This account does not belong to you", alert=True)
         return
 
     user["accounts"].remove(phone)
@@ -433,8 +433,8 @@ async def menu_add_callback(event):
     login_states[event.sender_id] = {"step": "phone"}
     await event.edit(
         "Add New Account\n\n"
-        "Send the phone number in international format, e.g., +213799#####\n\n"
-        
+        "Send the phone number in international format, e.g., +213XXXXXXXXX.\n\n"
+        "Note: Telegram decides how the code is sent. Check your active Telegram apps...",
         buttons=[Button.inline("Cancel", b"menu_main")],
     )
 
@@ -461,7 +461,7 @@ async def global_text_handler(event):
             await event.reply("Name cannot be empty.")
             return
         if len(user_input) > 40:
-            await event.reply("Name is too long. Max 40 characters.")
+            await event.reply("Name is too long. Max 40 characters...")
             return
 
         target_phone = state["target_phone"]
@@ -476,7 +476,7 @@ async def global_text_handler(event):
     if state["step"] == "phone":
         phone = user_input.replace(" ", "").replace("-", "")
         if not re.fullmatch(r"\+[1-9]\d{7,14}", phone):
-            await event.reply("Invalid format. Please use international format like +213XXXXXXXXX.")
+            await event.reply("Invalid format.  use international format like +213799####.")
             return
         user = get_user(chat_id)
         if phone in user["accounts"]:
@@ -503,23 +503,23 @@ async def global_text_handler(event):
         except PhoneNumberInvalidError:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("Telegram rejected this number as invalid. Please check the code and number.")
+            await event.reply("Telegram rejected this number as invalid... Please check the code and number...")
         except PhoneNumberBannedError:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("This number is banned from Telegram.")
+            await event.reply("This number is banned from Telegram....")
         except PhoneNumberFloodError:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("Too many attempts for this number. Please wait and try again later.")
+            await event.reply("Too many attempts for this number.... Please wait and try again later....")
         except FloodWaitError as exc:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply(f"Flood wait active. Please try again after {exc.seconds} seconds.")
+            await event.reply(f"Flood wait active...  try again after {exc.seconds} seconds.")
         except (ApiIdInvalidError, ApiIdPublishedFloodError) as exc:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("API key error. Check your API_ID and API_HASH settings in Railway.")
+            await event.reply("API key error... Check your API_ID and API_HASH settings in Railway.")
         except Exception as exc:
             try:
                 await client.disconnect()
@@ -536,15 +536,15 @@ async def global_text_handler(event):
         try:
             await client.sign_in(phone=phone, code=code, phone_code_hash=state["phone_code_hash"])
         except PhoneCodeInvalidError:
-            await event.reply("Invalid code. Please enter the correct code.")
+            await event.reply("Invalid code... enter the correct code")
             return
         except PhoneCodeExpiredError:
             await close_login_state(chat_id)
-            await event.reply("Code expired  request a new code", buttons=make_main_keyboard())
+            await event.reply("Code expired.  request a new code.", buttons=make_main_keyboard())
             return
         except SessionPasswordNeededError:
             state["step"] = "password"
-            await event.reply("Two-step verification password is required...  send your password:")
+            await event.reply("Two-step verification password is required. Please send your password:")
             return
         except Exception as exc:
             await close_login_state(chat_id)
@@ -560,7 +560,7 @@ async def global_text_handler(event):
         task = asyncio.create_task(account_time_loop(phone, client, chat_id))
         running_accounts[phone] = task
         login_states.pop(chat_id, None)
-        await event.reply(f"Account linked and started successfully. You can now customize its name from the dashboard", buttons=make_main_keyboard())
+        await event.reply(f"Account linked and started successfully.. You can now customize its name from the dashboard", buttons=make_main_keyboard())
         return
 
     if state["step"] == "password":
