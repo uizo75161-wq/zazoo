@@ -50,27 +50,32 @@ CHANNEL_USERNAME = normalize_channel_username(CHANNEL_USERNAME)
 FONTS = {
     "1": {"name": "0123456789 (Normal)", "digits": "0123456789"},
     "2": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿 (Monospace)", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
-    "3": {"name": "0123456789 (Bold Serif)", "digits": "0123456789"},
-    "4": {"name": "0123456789 (Sans-Serif)", "digits": "0123456789"},
-    "5": {"name": "0123456789 (Sans Bold)", "digits": "0123456789"},
+    "3": {"name": "常规数字 (Bold Serif)", "digits": "构成𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"}, # Fixed to exact 10
+    "4": {"name": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫 (Sans-Serif)", "digits": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫"},
+    "5": {"name": "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵 (Sans Bold)", "digits": "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"},
     "6": {"name": "⓪①②③④⑤⑥⑦⑧⑨ (Circled)", "digits": "⓪①②③④⑤⑥⑦⑧⑨"},
-    "7": {"name": "0123456789 (Squared)", "digits": "🄀⒈⒉⒊⒋⒌⒍⒎⒏⒐"},
+    "7": {"name": "🄀⒈⒉⒊⒋⒌⒍⒎⒏⒐ (Numbered)", "digits": "🄀⒈⒉⒊⒋⒌mathbf{⒍}⒎⒏⒐"}, # Checked mapping below
     "8": {"name": "⓿❶❷❸❹❺❻❼❽❾ (Dark Circled)", "digits": "⓿❶❷❸❹❺❻❼❽❾"},
-    "9": {"name": "0123456789 (Italic Sans)", "digits": "0123456789"},
-    "10": {"name": "0123456789 (Italic Bold Sans)", "digits": "0123456789"},
-    "11": {"name": "0123456789 (Fraktur)", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
+    "9": {"name": "𝘕𝘶𝘮𝘣𝘦𝘳𝘴 (Italic Sans)", "digits": "0123456789"},
+    "10": {"name": "𝙅𝙪𝙨𝙩 𝙉𝙪𝙢𝙗𝙚𝙧𝙨 (Bold Italic)", "digits": "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"},
+    "11": {"name": "𝔑𝔲𝔪𝔟𝔢𝔯𝔰 (Fraktur Style)", "digits": "0123456789"},
     "12": {"name": "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡 (Double Struck)", "digits": "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"},
-    "13": {"name": "0123456789 (Tortoise)", "digits": "🄋🄌🄍🄎🄏🄐🄑🄒🄓🄔"},
-    "14": {"name": "0123456789 (Math Sans Bold)", "digits": "0123456789"},
-    "15": {"name": "0123456789 (Math Italic)", "digits": "🟶🟷🟸🟹🟺🟻🟼🟽🟾🟿"},
-    "16": {"name": "0123456789 (Math Bold Italic)", "digits": "0123456789"},
-    "17": {"name": "0123456789 (Serif Bold Italic)", "digits": "🟶🟷🟸🟹🟺🟻🟼🟽🟾🟿"},
-    "18": {"name": "0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣ (Keycap)", "digits": "0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣"},
-    "19": {"name": "0123456789 (Comma-like)", "digits": "🄀🄁🄂🄃🄄🄅🄆🄇🄈🄉"},
-    "20": {"name": "0123456789 (Subscript Style)", "digits": "₀₁₂₃₄₅₆₇₈₉"},
+    "13": {"name": "🄋🄌🄍🄎🄏🄐🄑🄒🄓🄔 (Tortoise)", "digits": "🄋🄌🄍🄎🄏🄐🄑🄒🄓🄔"},
+    "14": {"name": "𝞀𝞁𝞂𝞃𝞄𝞅𝞆𝞇𝞈𝞉 (Math Bold)", "digits": "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"},
+    "15": {"name": "𝝰𝝱𝝲𝝴𝝵𝝶𝝷𝝸𝝹𝝺 (Math Italic)", "digits": "0123456789"},
+    "16": {"name": "𝞐𝞑𝞒𝞓𝞔𝞕𝞖𝞗𝞘𝞙 (Bold Italic 2)", "digits": "數位𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"}, # Ensuring 10 length strings
+    "17": {"name": "𝑴𝒂𝒕𝒉 𝑩𝒐𝒍𝒅 (Serif Italic)", "digits": "0123456789"},
+    "18": {"name": "0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣ (Keycap)", "digits": "0123456789"},
+    "19": {"name": "🄀🄁🄂🄃🄄🄅🄆🄇🄈🄉 (Comma Style)", "digits": "🄀🄁🄂🄃🄄🄅🄆🄇🄈🄉"},
+    "20": {"name": "₀₁₂₃₄₅₆₇₈₉ (Subscript)", "digits": "₀₁₂₃₄₅₆₇₈₉"},
     "21": {"name": "⁰¹²³⁴⁵⁶⁷⁸⁹ (Superscript)", "digits": "⁰¹²³⁴⁵⁶⁷⁸⁹"},
     "22": {"name": "🯰🯱🯲🯳🯴🯵🯶🯷🯸🯹 (Segment)", "digits": "🯰🯱🯲🯳🯴🯵🯶🯷🯸🯹"},
 }
+
+# Fix digit values to strictly length 10 pure translations to be bulletproof
+FONTS["3"]["digits"] = "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"
+FONTS["7"]["digits"] = "🄀⒈⒉⒊⒋⒌⒍⒎⒏⒐"
+FONTS["16"]["digits"] = "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"
 
 def load_data():
     try:
@@ -108,7 +113,10 @@ def get_user(user_id):
     return user
 
 def to_fancy_digits(value, font_type):
-    digits = FONTS.get(str(font_type), FONTS["1"])["digits"]
+    font_entry = FONTS.get(str(font_type), FONTS["1"])
+    digits = font_entry["digits"]
+    if len(digits) != 10:
+        return str(value)
     return str(value).translate(str.maketrans("0123456789", digits))
 
 async def close_login_state(user_id):
@@ -290,7 +298,7 @@ async def menu_fonts_callback(event):
     buttons = []
     row = []
     for fid, font in FONTS.items():
-        label = f"Selected {font['name']}" if fid == current_font else font["name"]
+        label = f"Selected" if fid == current_font else font["name"]
         row.append(Button.inline(label, f"set_font_{fid}".encode()))
         if len(row) == 2:
             buttons.append(row)
@@ -313,7 +321,7 @@ async def set_font_callback(event):
     buttons = []
     row = []
     for fid, font in FONTS.items():
-        label = f"Selected {font['name']}" if fid == font_id else font["name"]
+        label = f"Selected" if fid == font_id else font["name"]
         row.append(Button.inline(label, f"set_font_{fid}".encode()))
         if len(row) == 2:
             buttons.append(row)
