@@ -22,12 +22,10 @@ from telethon.errors import (
 from telethon.tl.functions.account import UpdateProfileRequest
 from telethon.tl.functions.channels import GetParticipantRequest
 
-# Railway Variables: API_ID, API_HASH, BOT_TOKEN
 API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 
-# في Railway اربط Volume بمسار /data واضبط DATA_DIR=/data لحفظ الجلسات بعد إعادة النشر.
 DATA_DIR = os.getenv("DATA_DIR", ".")
 os.makedirs(DATA_DIR, exist_ok=True)
 DATA_FILE = os.path.join(DATA_DIR, "users.json")
@@ -35,8 +33,6 @@ SESSIONS_DIR = os.path.join(DATA_DIR, "user_sessions")
 os.makedirs(SESSIONS_DIR, exist_ok=True)
 BOT_SESSION = os.path.join(DATA_DIR, "bot_control_session")
 
-# ضع اسم القناة العامة في Railway Variables، مثال: CHANNEL_USERNAME=@my_channel
-# يمكن أيضاً وضع رابط القناة العام https://t.me/my_channel.
 CHANNEL_USERNAME = os.getenv("CHANNEL_USERNAME", "").strip()
 
 def normalize_channel_username(value):
@@ -52,12 +48,29 @@ def normalize_channel_username(value):
 CHANNEL_USERNAME = normalize_channel_username(CHANNEL_USERNAME)
 
 FONTS = {
-    "1": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
-    "2": {"name": "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗", "digits": "𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗"},
-    "3": {"name": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫", "digits": "𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫"},
-    "4": {"name": "⓪①②③④⑤⑥⑦⑧⑨", "digits": "⓪①②③④⑤⑥⑦⑧⑨"},
+    "1": {"name": "0123456789 (Normal)", "digits": "0123456789"},
+    "2": {"name": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿 (Monospace)", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
+    "3": {"name": "0123456789 (Bold Serif)", "digits": "0123456789"},
+    "4": {"name": "0123456789 (Sans-Serif)", "digits": "0123456789"},
+    "5": {"name": "0123456789 (Sans Bold)", "digits": "0123456789"},
+    "6": {"name": "⓪①②③④⑤⑥⑦⑧⑨ (Circled)", "digits": "⓪①②③④⑤⑥⑦⑧⑨"},
+    "7": {"name": "0123456789 (Squared)", "digits": "🄀⒈⒉⒊⒋⒌⒍⒎⒏⒐"},
+    "8": {"name": "⓿❶❷❸❹❺❻❼❽❾ (Dark Circled)", "digits": "⓿❶❷❸❹❺❻❼❽❾"},
+    "9": {"name": "0123456789 (Italic Sans)", "digits": "0123456789"},
+    "10": {"name": "0123456789 (Italic Bold Sans)", "digits": "0123456789"},
+    "11": {"name": "0123456789 (Fraktur)", "digits": "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"},
+    "12": {"name": "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡 (Double Struck)", "digits": "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"},
+    "13": {"name": "0123456789 (Tortoise)", "digits": "🄋🄌🄍🄎🄏🄐🄑🄒🄓🄔"},
+    "14": {"name": "0123456789 (Math Sans Bold)", "digits": "0123456789"},
+    "15": {"name": "0123456789 (Math Italic)", "digits": "🟶🟷🟸🟹🟺🟻🟼🟽🟾🟿"},
+    "16": {"name": "0123456789 (Math Bold Italic)", "digits": "0123456789"},
+    "17": {"name": "0123456789 (Serif Bold Italic)", "digits": "🟶🟷🟸🟹🟺🟻🟼🟽🟾🟿"},
+    "18": {"name": "0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣ (Keycap)", "digits": "0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣"},
+    "19": {"name": "0123456789 (Comma-like)", "digits": "🄀🄁🄂🄃🄄🄅🄆🄇🄈🄉"},
+    "20": {"name": "0123456789 (Subscript Style)", "digits": "₀₁₂₃₄₅₆₇₈₉"},
+    "21": {"name": "⁰¹²³⁴⁵⁶⁷⁸⁹ (Superscript)", "digits": "⁰¹²³⁴⁵⁶⁷⁸⁹"},
+    "22": {"name": "🯰🯱🯲🯳🯴🯵🯶🯷🯸🯹 (Segment)", "digits": "🯰🯱🯲🯳🯴🯵🯶🯷🯸🯹"},
 }
-
 
 def load_data():
     try:
@@ -67,11 +80,9 @@ def load_data():
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
-
 users = load_data()
 running_accounts = {}
 login_states = {}
-
 
 def save_data():
     temporary_file = DATA_FILE + ".tmp"
@@ -79,56 +90,26 @@ def save_data():
         json.dump(users, file, indent=2, ensure_ascii=False)
     os.replace(temporary_file, DATA_FILE)
 
-
 def get_user(user_id):
     key = str(user_id)
     if key not in users or not isinstance(users[key], dict):
-        users[key] = {"base_name": "Z", "font_type": "1", "accounts": []}
+        users[key] = {"font_type": "1", "accounts": [], "account_names": {}}
         save_data()
     user = users[key]
-    user.setdefault("base_name", "Z")
     user.setdefault("font_type", "1")
     user.setdefault("accounts", [])
+    user.setdefault("account_names", {})
     if not isinstance(user["accounts"], list):
         user["accounts"] = []
+    if not isinstance(user["account_names"], dict):
+        user["account_names"] = {}
     if str(user.get("font_type")) not in FONTS:
         user["font_type"] = "1"
     return user
 
-
 def to_fancy_digits(value, font_type):
     digits = FONTS.get(str(font_type), FONTS["1"])["digits"]
     return str(value).translate(str.maketrans("0123456789", digits))
-
-
-def describe_code_delivery(sent):
-    """وصف نوع الإرسال الذي أعاده Telegram؛ لا يعني ذلك ضمان وصول الرسالة فعلياً."""
-    sent_type = type(getattr(sent, "type", None)).__name__
-    delivery = {
-        "SentCodeTypeApp": "تطبيق Telegram على جهاز مسجّل الدخول",
-        "SentCodeTypeSms": "رسالة SMS",
-        "SentCodeTypeCall": "مكالمة هاتفية آلية",
-        "SentCodeTypeFlashCall": "مكالمة فائتة للتحقق من رقم المتصل",
-        "SentCodeTypeMissedCall": "مكالمة فائتة؛ عادةً تُستخدم أرقامها الأخيرة كرمز",
-        "SentCodeTypeEmailCode": "البريد الإلكتروني، إذا عرضه Telegram لهذا الحساب",
-        "SentCodeTypeSetUpEmailRequired": "يلزم إعداد بريد إلكتروني حسب تعليمات Telegram",
-        "SentCodeTypeFirebaseSms": "رسالة SMS عبر آلية تحقق خاصة بالتطبيقات الرسمية",
-    }.get(sent_type, f"طريقة يحددها Telegram ({sent_type or 'غير معروفة'})")
-    timeout = getattr(sent, "timeout", None)
-    next_type = getattr(sent, "next_type", None)
-    next_name = type(next_type).__name__ if next_type is not None else None
-    details = f"📨 طريقة التحقق التي أعادها Telegram: **{delivery}**.\n"
-    if timeout:
-        details += f"⏳ مهلة الانتظار قبل إتاحة طريقة أخرى: {timeout} ثانية تقريباً.\n"
-    if next_name:
-        details += f"ℹ️ الطريقة التالية التي ذكرها Telegram: `{next_name}`.\n"
-    details += (
-        "ملاحظة: هذا يوضح نوع التسليم الذي اختاره Telegram فقط، ولا يؤكد أن الرسالة وصلت. "
-        "إذا كانت الطريقة تطبيق Telegram، افتح محادثة Telegram الرسمية على جهاز مسجّل الدخول؛ "
-        "ولا تفترض أن الرمز سيصل عبر SMS."
-    )
-    return details
-
 
 async def close_login_state(user_id):
     state = login_states.pop(user_id, None)
@@ -140,20 +121,17 @@ async def close_login_state(user_id):
             if client.is_connected():
                 await client.disconnect()
         except Exception as exc:
-            print(f"تعذر إغلاق اتصال تسجيل الدخول للمستخدم {user_id}: {type(exc).__name__}: {exc}")
-
+            print(f"Error closing login state for user {user_id}: {type(exc).__name__}: {exc}")
 
 async def check_subscription(event):
     if not event.is_private:
         return True
 
-    # لا تحاول الاتصال باسم افتراضي؛ اعرض إعداداً واضحاً في حال نسيان المتغير.
     if not CHANNEL_USERNAME or CHANNEL_USERNAME.lower() == "@yourchannelusername":
-        print("إعداد مفقود: أضف CHANNEL_USERNAME في Railway Variables، مثال @my_channel")
+        print("Missing config: Add CHANNEL_USERNAME in Railway Variables")
         await event.reply(
-            "⚠️ لم يتم إعداد قناة الاشتراك في البوت.\n\n"
-            "في Railway افتح Variables وأضف CHANNEL_USERNAME بقيمة اسم القناة العامة، "
-            "مثال: `@my_channel`، ثم أعد النشر."
+            "Subscription channel is not configured in the bot.\n\n"
+            "Please add CHANNEL_USERNAME in Railway Variables and redeploy."
         )
         return False
 
@@ -163,45 +141,21 @@ async def check_subscription(event):
     except UserNotParticipantError:
         channel_link = f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}"
         buttons = [
-            [Button.url("📢 اشترك في القناة", channel_link)],
-            [Button.inline("✅ تحقّق من الاشتراك", b"check_subscription")],
+            [Button.url("Join Channel", channel_link)],
+            [Button.inline("Verify Subscription", b"check_subscription")],
         ]
         await event.reply(
-            "🔒 **لاستخدام البوت، يجب الاشتراك في قناة البوت أولاً.**\n\n"
-            "1) اضغط «اشترك في القناة».\n"
-            "2) اشترك، ثم ارجع إلى هنا واضغط «تحقّق من الاشتراك».\n\n"
-            "إذا كنت مشتركاً وما زال التحقق يفشل، يجب التأكد أن البوت مضاف إلى القناة كمشرف.",
+            "To use this bot, you must subscribe to our channel first.\n\n"
+            "1) Click Join Channel.\n"
+            "2) Subscribe and return here to click Verify Subscription.",
             buttons=buttons,
         )
         return False
     except Exception as exc:
         error_name = type(exc).__name__
-        print(f"خطأ فحص الاشتراك للقناة {CHANNEL_USERNAME}: {error_name}: {exc}")
-
-        if error_name == "ChatAdminRequiredError":
-            message = (
-                "⚠️ البوت ليس مشرفاً في قناة الاشتراك أو ليس لديه صلاحية فحص الأعضاء.\n\n"
-                "أضف البوت إلى القناة كمشرف، ثم أعد تجربة /start."
-            )
-        elif error_name in ("UsernameInvalidError", "UsernameNotOccupiedError", "ChannelInvalidError"):
-            message = (
-                "⚠️ اسم قناة الاشتراك غير صحيح أو القناة غير عامة.\n\n"
-                "راجع قيمة CHANNEL_USERNAME في Railway Variables واكتب اسم القناة العامة "
-                "مثل `@my_channel` بدون رابط دعوة خاص."
-            )
-        elif error_name == "ChannelPrivateError":
-            message = (
-                "⚠️ البوت لا يستطيع الوصول إلى هذه القناة. تأكد أن القناة عامة وأن البوت أُضيف إليها كمشرف."
-            )
-        else:
-            message = (
-                f"⚠️ تعذر التحقق من اشتراك القناة ({error_name}).\n\n"
-                "راجع Logs في Railway؛ تأكد من اسم القناة وأن البوت مشرف فيها."
-            )
-
-        await event.reply(message)
+        print(f"Subscription check error for {CHANNEL_USERNAME}: {error_name}: {exc}")
+        await event.reply("Subscription check failed. Please ensure the bot is an admin in the channel.")
         return False
-
 
 async def account_time_loop(phone_number, client, user_id):
     last_name = None
@@ -216,18 +170,20 @@ async def account_time_loop(phone_number, client, user_id):
 
                 raw_time = datetime.datetime.now(ZoneInfo("Africa/Algiers")).strftime("%H:%M")
                 fancy_time = to_fancy_digits(raw_time, user.get("font_type", "1"))
-                new_name = f"{user.get('base_name', 'Z')} {fancy_time}".strip()[:64]
+                
+                base_name = user.get("account_names", {}).get(phone_number, "Z")
+                new_name = f"{base_name} {fancy_time}".strip()[:64]
                 if new_name != last_name:
                     await client(UpdateProfileRequest(first_name=new_name))
                     last_name = new_name
                 await asyncio.sleep(30)
             except FloodWaitError as exc:
-                print(f"FloodWait للحساب {phone_number}: الانتظار {exc.seconds} ثانية")
+                print(f"FloodWait for account {phone_number}: Waiting {exc.seconds} seconds")
                 await asyncio.sleep(exc.seconds + 1)
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
-                print(f"خطأ تحديث الحساب {phone_number}: {type(exc).__name__}: {exc}")
+                print(f"Update error for account {phone_number}: {type(exc).__name__}: {exc}")
                 await asyncio.sleep(15)
     except asyncio.CancelledError:
         pass
@@ -236,8 +192,7 @@ async def account_time_loop(phone_number, client, user_id):
             if client.is_connected():
                 await client.disconnect()
         except Exception as exc:
-            print(f"تعذر فصل جلسة {phone_number}: {type(exc).__name__}: {exc}")
-
+            print(f"Failed to disconnect session {phone_number}: {type(exc).__name__}: {exc}")
 
 async def load_saved_sessions():
     await asyncio.sleep(1)
@@ -249,7 +204,7 @@ async def load_saved_sessions():
                 continue
             session_path = os.path.join(SESSIONS_DIR, phone)
             if not os.path.exists(session_path + ".session"):
-                print(f"لا يوجد ملف جلسة محفوظ للحساب {phone}. تأكد من إعداد DATA_DIR وRailway Volume.")
+                print(f"No session file found for account {phone}.")
                 continue
             client = TelegramClient(session_path, API_ID, API_HASH, auto_reconnect=True)
             try:
@@ -258,28 +213,25 @@ async def load_saved_sessions():
                     running_accounts[phone] = asyncio.create_task(
                         account_time_loop(phone, client, int(user_id))
                     )
-                    print(f"تم تحميل جلسة الحساب {phone}")
+                    print(f"Loaded session for account {phone}")
                 else:
                     await client.disconnect()
-                    print(f"جلسة الحساب {phone} غير مصرح بها")
+                    print(f"Session unauthorized for account {phone}")
             except Exception as exc:
-                print(f"تعذر تحميل جلسة {phone}: {type(exc).__name__}: {exc}")
+                print(f"Could not load session {phone}: {type(exc).__name__}: {exc}")
                 try:
                     await client.disconnect()
                 except Exception:
                     pass
 
-
 def make_main_keyboard():
     return [
-        [Button.inline("➕ إضافة حساب", b"menu_add"), Button.inline("⚙️ أنواع الزخرفات", b"menu_fonts")],
-        [Button.inline("📝 تغيير الاسم", b"menu_name"), Button.inline("📊 الحسابات المتصلة", b"menu_status")],
-        [Button.inline("🛑 إيقاف حساب", b"menu_stop")],
+        [Button.inline("Add Account", b"menu_add"), Button.inline("Font Styles", b"menu_fonts")],
+        [Button.inline("Change Name", b"menu_name_select"), Button.inline("Status Dashboard", b"menu_status")],
+        [Button.inline("Stop Account", b"menu_stop")],
     ]
 
-
 bot = TelegramClient(BOT_SESSION, API_ID, API_HASH)
-
 
 @bot.on(events.NewMessage(pattern=r"^/start$"))
 async def start_handler(event):
@@ -288,136 +240,167 @@ async def start_handler(event):
     await close_login_state(event.sender_id)
     get_user(event.sender_id)
     await event.reply(
-        "🤖 **أهلاً بك في بوت إدارة حسابات الوقت**\n\nيمكنك التحكم عبر الأزرار أدناه:",
+        "Welcome to Time Account Manager Bot\n\nControl your accounts using the buttons below:",
         buttons=make_main_keyboard(),
     )
 
-
 @bot.on(events.CallbackQuery(pattern=b"^check_subscription$"))
 async def check_subscription_callback(event):
-    """أعد فحص الاشتراك عند ضغط المستخدم على زر التحقق."""
     if not CHANNEL_USERNAME or CHANNEL_USERNAME.lower() == "@yourchannelusername":
-        await event.answer("لم يتم إعداد CHANNEL_USERNAME في Railway Variables.", alert=True)
+        await event.answer("CHANNEL_USERNAME configuration missing.", alert=True)
         return
     try:
         await bot(GetParticipantRequest(channel=CHANNEL_USERNAME, participant=event.sender_id))
     except UserNotParticipantError:
         channel_link = f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}"
-        await event.answer("لم يظهر اشتراكك بعد. اشترك في القناة ثم أعد المحاولة.", alert=True)
+        await event.answer("Subscription not found. Join the channel first.", alert=True)
         try:
             await event.edit(
-                "🔒 **يجب الاشتراك في القناة أولاً لاستخدام البوت.**\n\n"
-                "اشترك في القناة، ثم اضغط «تحقّق من الاشتراك». ",
+                "You must join our channel to use this bot.\n\nSubscribe and press Verify Subscription.",
                 buttons=[
-                    [Button.url("📢 اشترك في القناة", channel_link)],
-                    [Button.inline("✅ تحقّق من الاشتراك", b"check_subscription")],
+                    [Button.url("Join Channel", channel_link)],
+                    [Button.inline("Verify Subscription", b"check_subscription")],
                 ],
             )
         except Exception:
             pass
         return
     except Exception as exc:
-        name = type(exc).__name__
-        print(f"خطأ إعادة فحص الاشتراك في {CHANNEL_USERNAME}: {name}: {exc}")
-        if name in ("ChatAdminRequiredError", "ChannelPrivateError"):
-            msg = "لا يستطيع البوت فحص أعضاء القناة. أضف البوت كمشرف في القناة العامة ثم جرّب مجدداً."
-        else:
-            msg = f"تعذّر فحص الاشتراك ({name}). تأكد من CHANNEL_USERNAME وأن البوت مشرف في القناة."
-        await event.answer(msg, alert=True)
+        await event.answer("Verification failed. Please contact support.", alert=True)
         return
 
-    await event.answer("تم التحقق من اشتراكك ✅")
+    await event.answer("Subscription verified")
     await event.edit(
-        "🤖 **أهلاً بك في بوت إدارة حسابات الوقت**\n\nتم التحقق من اشتراكك. يمكنك استخدام الأزرار أدناه:",
+        "Welcome to Time Account Manager Bot\n\nSubscription verified. You can use the buttons below:",
         buttons=make_main_keyboard(),
     )
-
 
 @bot.on(events.CallbackQuery(pattern=b"^menu_main$"))
 async def menu_main_callback(event):
     await close_login_state(event.sender_id)
     await event.edit(
-        "🤖 **لوحة التحكم الرئيسية**\n\nاختر الإجراء المطلوب من الأزرار المتاحة:",
+        "Main Dashboard\n\nChoose an action from the options below:",
         buttons=make_main_keyboard(),
     )
-
 
 @bot.on(events.CallbackQuery(pattern=b"^menu_fonts$"))
 async def menu_fonts_callback(event):
     user = get_user(event.sender_id)
     current_font = str(user.get("font_type", "1"))
     buttons = []
+    row = []
     for fid, font in FONTS.items():
-        label = f"✅ {font['name']}" if fid == current_font else font["name"]
-        buttons.append([Button.inline(label, f"set_font_{fid}".encode())])
-    buttons.append([Button.inline("🔙 عودة", b"menu_main")])
-    await event.edit("⚙️ **قائمة أنماط الأرقام:**\nاختر النمط الذي يناسبك لجميع حساباتك:", buttons=buttons)
-
+        label = f"Selected {font['name']}" if fid == current_font else font["name"]
+        row.append(Button.inline(label, f"set_font_{fid}".encode()))
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
+    buttons.append([Button.inline("Back", b"menu_main")])
+    await event.edit("Font Styles Menu\nSelect your preferred digit style for all accounts:", buttons=buttons)
 
 @bot.on(events.CallbackQuery(pattern=rb"^set_font_(\d+)$"))
 async def set_font_callback(event):
     font_id = event.pattern_match.group(1).decode()
     if font_id not in FONTS:
-        await event.answer("النمط غير معروف", alert=True)
+        await event.answer("Unknown font style", alert=True)
         return
     user = get_user(event.sender_id)
     user["font_type"] = font_id
     save_data()
+
     buttons = []
+    row = []
     for fid, font in FONTS.items():
-        label = f"✅ {font['name']}" if fid == font_id else font["name"]
-        buttons.append([Button.inline(label, f"set_font_{fid}".encode())])
-    buttons.append([Button.inline("🔙 عودة", b"menu_main")])
-    await event.edit("⚙️ **تم حفظ نمط الأرقام.**\nاختر نمطاً آخر أو عد إلى القائمة.", buttons=buttons)
+        label = f"Selected {font['name']}" if fid == font_id else font["name"]
+        row.append(Button.inline(label, f"set_font_{fid}".encode()))
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
+    buttons.append([Button.inline("Back", b"menu_main")])
+    await event.edit("Font style saved successfully.\nSelect another style or go back.", buttons=buttons)
 
-
-@bot.on(events.CallbackQuery(pattern=b"^menu_name$"))
-async def menu_name_callback(event):
+@bot.on(events.CallbackQuery(pattern=b"^menu_name_select$"))
+async def menu_name_select_callback(event):
     await close_login_state(event.sender_id)
     user = get_user(event.sender_id)
-    login_states[event.sender_id] = {"step": "change_name_input"}
-    await event.edit(
-        f"📝 **الاسم الحالي:** {user['base_name']}\n\n"
-        "أرسل الاسم الجديد في رسالة عادية (بحد أقصى 40 حرفاً).\nأرسل /start للإلغاء.",
-        buttons=[Button.inline("🔙 إلغاء وعودة", b"menu_main")],
-    )
+    accounts = user.get("accounts", [])
 
+    if not accounts:
+        await event.edit("No linked accounts available to rename. Please add an account first.", buttons=[Button.inline("Back", b"menu_main")])
+        return
+
+    buttons = []
+    for acc in accounts:
+        current_name = user.get("account_names", {}).get(acc, "Z")
+        buttons.append([Button.inline(f"{acc} ({current_name})", f"name_edit_{acc}".encode())])
+
+    buttons.append([Button.inline("Back", b"menu_main")])
+    await event.edit("Select the account you want to rename:", buttons=buttons)
+
+@bot.on(events.CallbackQuery(pattern=rb"^name_edit_(.+)$"))
+async def name_edit_callback(event):
+    phone = event.pattern_match.group(1).decode()
+    user = get_user(event.sender_id)
+
+    if phone not in user.get("accounts", []):
+        await event.answer("Account not found.", alert=True)
+        return
+
+    login_states[event.sender_id] = {
+        "step": "change_name_input",
+        "target_phone": phone
+    }
+
+    current_name = user.get("account_names", {}).get(phone, "Z")
+    await event.edit(
+        f"Account: {phone}\n"
+        f"Current Name: {current_name}\n\n"
+        "Send the new base name in a normal text message (Max 40 characters).\nSend /start to cancel.",
+        buttons=[Button.inline("Cancel", b"menu_name_select")],
+    )
 
 @bot.on(events.CallbackQuery(pattern=b"^menu_status$"))
 async def menu_status_callback(event):
     user = get_user(event.sender_id)
     accounts = user.get("accounts", [])
     if not accounts:
-        text = "📊 **الحسابات المرتبطة:**\n\nلا توجد حسابات مرتبطة حالياً."
+        text = "Status Dashboard\n\nNo accounts linked currently."
     else:
-        text = "📊 **الحسابات المرتبطة حالياً:**\n\n" + "\n".join(
-            f"{idx}. `{acc}`" for idx, acc in enumerate(accounts, 1)
-        )
-    await event.edit(text, buttons=[Button.inline("🔙 عودة", b"menu_main")])
+        text = "Linked Accounts Status:\n\n"
+        for idx, acc in enumerate(accounts, 1):
+            c_name = user.get("account_names", {}).get(acc, "Z")
+            text += f"{idx}. {acc} -> {c_name}\n"
 
+    await event.edit(text, buttons=[Button.inline("Back", b"menu_main")])
 
 @bot.on(events.CallbackQuery(pattern=b"^menu_stop$"))
 async def menu_stop_callback(event):
     user = get_user(event.sender_id)
     accounts = user.get("accounts", [])
     if not accounts:
-        await event.edit("🛑 لا توجد حسابات مرتبطة لإيقافها.", buttons=[Button.inline("🔙 عودة", b"menu_main")])
+        await event.edit("No linked accounts available to stop.", buttons=[Button.inline("Back", b"menu_main")])
         return
-    buttons = [[Button.inline(f"❌ إيقاف الحساب: {acc}"[:60], f"action_stop_{acc}".encode())] for acc in accounts]
-    buttons.append([Button.inline("🔙 عودة", b"menu_main")])
-    await event.edit("🛑 **اختر الحساب المراد إيقافه وحذف جلسته:**", buttons=buttons)
-
+    buttons = [[Button.inline(f"Stop: {acc}"[:60], f"action_stop_{acc}".encode())] for acc in accounts]
+    buttons.append([Button.inline("Back", b"menu_main")])
+    await event.edit("Select the account you want to stop and remove:", buttons=buttons)
 
 @bot.on(events.CallbackQuery(pattern=rb"^action_stop_(.+)$"))
 async def action_stop_callback(event):
     phone = event.pattern_match.group(1).decode()
     user = get_user(event.sender_id)
     if phone not in user.get("accounts", []):
-        await event.answer("هذا الحساب غير موجود ضمن حساباتك.", alert=True)
+        await event.answer("This account does not belong to you.", alert=True)
         return
 
     user["accounts"].remove(phone)
+    if phone in user.get("account_names", {}):
+        user["account_names"].pop(phone)
     save_data()
+
     task = running_accounts.pop(phone, None)
     if task:
         task.cancel()
@@ -430,10 +413,9 @@ async def action_stop_callback(event):
         except FileNotFoundError:
             pass
         except OSError as exc:
-            print(f"تعذر حذف ملف الجلسة: {exc}")
+            print(f"Could not remove session file: {exc}")
 
-    await event.edit(f"🛑 تم إيقاف الحساب وفصل جلسته: `{phone}`", buttons=[Button.inline("🔙 عودة إلى التحكم", b"menu_main")])
-
+    await event.edit(f"Stopped and disconnected account: {phone}", buttons=[Button.inline("Back to Menu", b"menu_main")])
 
 @bot.on(events.CallbackQuery(pattern=b"^menu_add$"))
 async def menu_add_callback(event):
@@ -442,13 +424,11 @@ async def menu_add_callback(event):
         return
     login_states[event.sender_id] = {"step": "phone"}
     await event.edit(
-        "📱 **إضافة حساب جديد**\n\n"
-        "أرسل رقم الهاتف بالصيغة الدولية، مثال: `+213XXXXXXXXX`.\n\n"
-        "مهم: Telegram هو من يحدد طريقة وصول الرمز؛ قد يصل داخل تطبيق Telegram وليس SMS. "
-        "لن نعتبر طلب الإرسال دليلاً على وصول الرسالة.",
-        buttons=[Button.inline("🔙 إلغاء", b"menu_main")],
+        "Add New Account\n\n"
+        "Send the phone number in international format, e.g., +213XXXXXXXXX.\n\n"
+        "Note: Telegram decides how the code is sent. Check your active Telegram apps.",
+        buttons=[Button.inline("Cancel", b"menu_main")],
     )
-
 
 @bot.on(events.NewMessage)
 async def global_text_handler(event):
@@ -461,7 +441,7 @@ async def global_text_handler(event):
     if event.raw_text.startswith("/"):
         if event.raw_text.strip().lower() in ("/cancel", "/start"):
             await close_login_state(chat_id)
-            await event.reply("تم إلغاء العملية.", buttons=make_main_keyboard())
+            await event.reply("Operation canceled.", buttons=make_main_keyboard())
         return
     if not await check_subscription(event):
         return
@@ -470,31 +450,34 @@ async def global_text_handler(event):
 
     if state["step"] == "change_name_input":
         if not user_input:
-            await event.reply("❌ الاسم لا يمكن أن يكون فارغاً.")
+            await event.reply("Name cannot be empty.")
             return
         if len(user_input) > 40:
-            await event.reply("❌ الاسم طويل جداً؛ أرسل اسماً لا يتجاوز 40 حرفاً.")
+            await event.reply("Name is too long. Max 40 characters.")
             return
+
+        target_phone = state["target_phone"]
         user = get_user(chat_id)
-        user["base_name"] = user_input
+        user["account_names"][target_phone] = user_input
         save_data()
+
         login_states.pop(chat_id, None)
-        await event.reply(f"✅ تم تعديل الاسم الأساسي إلى: {user_input}", buttons=make_main_keyboard())
+        await event.reply(f"Base name updated for account {target_phone} to: {user_input}", buttons=make_main_keyboard())
         return
 
     if state["step"] == "phone":
         phone = user_input.replace(" ", "").replace("-", "")
         if not re.fullmatch(r"\+[1-9]\d{7,14}", phone):
-            await event.reply("❌ صيغة الرقم غير صحيحة. أرسله بالصيغة الدولية مثل `+213XXXXXXXXX`.")
+            await event.reply("Invalid format. Please use international format like +213XXXXXXXXX.")
             return
         user = get_user(chat_id)
         if phone in user["accounts"]:
             await close_login_state(chat_id)
-            await event.reply("⚠️ هذا الحساب مرتبط لديك بالفعل!", buttons=make_main_keyboard())
+            await event.reply("This account is already linked.", buttons=make_main_keyboard())
             return
         if phone in running_accounts and not running_accounts[phone].done():
             await close_login_state(chat_id)
-            await event.reply("⚠️ توجد جلسة نشطة لهذا الرقم بالفعل.", buttons=make_main_keyboard())
+            await event.reply("An active session already exists for this number.", buttons=make_main_keyboard())
             return
 
         session_path = os.path.join(SESSIONS_DIR, phone)
@@ -508,40 +491,34 @@ async def global_text_handler(event):
                 "phone": phone,
                 "client": client,
             }
-            await event.reply(
-                f"✅ أعاد Telegram نتيجة لطلب الرمز للرقم `{phone}`.\n\n"
-                f"{describe_code_delivery(sent)}\n\n"
-                "إذا لم يصلك الرمز، افحص المكان الموضّح أعلاه. لا تطلب إعادة الإرسال بشكل متكرر.",
-            )
+            await event.reply(f"Telegram sent a verification code request for {phone}. Please enter the code below:")
         except PhoneNumberInvalidError:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("❌ Telegram رفض الرقم باعتباره غير صالح. راجع رمز الدولة والرقم.")
+            await event.reply("Telegram rejected this number as invalid. Please check the code and number.")
         except PhoneNumberBannedError:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("❌ Telegram أفاد بأن هذا الرقم محظور؛ لا يمكن إصلاح ذلك من كود البوت.")
+            await event.reply("This number is banned from Telegram.")
         except PhoneNumberFloodError:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("⏳ طلب Telegram رموزاً كثيرة لهذا الرقم. أوقف المحاولات وانتظر قبل التجربة مجدداً.")
+            await event.reply("Too many attempts for this number. Please wait and try again later.")
         except FloodWaitError as exc:
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply(f"⏳ Telegram فرض انتظاراً لمدة {exc.seconds} ثانية. حاول مرة واحدة بعد انتهاء المهلة.")
+            await event.reply(f"Flood wait active. Please try again after {exc.seconds} seconds.")
         except (ApiIdInvalidError, ApiIdPublishedFloodError) as exc:
-            print(f"خطأ API Telegram: {type(exc).__name__}: {exc}")
             await client.disconnect()
             login_states.pop(chat_id, None)
-            await event.reply("❌ مشكلة في API_ID/API_HASH أو تقييد على بيانات API. راجع سجلات Railway وإعدادات API.")
+            await event.reply("API key error. Check your API_ID and API_HASH settings in Railway.")
         except Exception as exc:
-            print(f"فشل طلب الرمز للرقم {phone}: {type(exc).__name__}: {exc}")
             try:
                 await client.disconnect()
             except Exception:
                 pass
             login_states.pop(chat_id, None)
-            await event.reply(f"❌ فشل طلب الرمز: `{type(exc).__name__}`. راجع Logs في Railway لمعرفة التفاصيل.")
+            await event.reply(f"Request failed: {type(exc).__name__}. Check Railway logs for details.")
         return
 
     if state["step"] == "code":
@@ -551,32 +528,31 @@ async def global_text_handler(event):
         try:
             await client.sign_in(phone=phone, code=code, phone_code_hash=state["phone_code_hash"])
         except PhoneCodeInvalidError:
-            # ابقِ المحاولة مفتوحة للسماح بإدخال الرمز الصحيح دون إنشاء طلب جديد.
-            await event.reply("❌ الرمز الذي أدخلته غير صحيح. أدخل أحدث رمز وصلك من Telegram كما هو.")
+            await event.reply("Invalid code. Please enter the correct code.")
             return
         except PhoneCodeExpiredError:
             await close_login_state(chat_id)
-            await event.reply("⌛ انتهت صلاحية الرمز. اضغط إضافة حساب واطلب رمزاً جديداً مرة واحدة.", buttons=make_main_keyboard())
+            await event.reply("Code expired. Please request a new code.", buttons=make_main_keyboard())
             return
         except SessionPasswordNeededError:
             state["step"] = "password"
-            await event.reply("🔒 الحساب محمي بالتحقق بخطوتين. أرسل كلمة المرور لإكمال تسجيل الدخول.")
+            await event.reply("Two-step verification password is required. Please send your password:")
             return
         except Exception as exc:
-            print(f"فشل التحقق من رمز {phone}: {type(exc).__name__}: {exc}")
             await close_login_state(chat_id)
-            await event.reply(f"❌ فشل التحقق: `{type(exc).__name__}`. راجع Logs في Railway.", buttons=make_main_keyboard())
+            await event.reply(f"Verification failed: {type(exc).__name__}.", buttons=make_main_keyboard())
             return
 
         user = get_user(chat_id)
         if phone not in user["accounts"]:
             user["accounts"].append(phone)
-            save_data()
+            user["account_names"].setdefault(phone, "Z")
+        save_data()
+
         task = asyncio.create_task(account_time_loop(phone, client, chat_id))
         running_accounts[phone] = task
-        me = await client.get_me()
         login_states.pop(chat_id, None)
-        await event.reply(f"✅ تم ربط وتشغيل الحساب بنجاح!\n👤 الحساب: {me.first_name}", buttons=make_main_keyboard())
+        await event.reply(f"Account linked and started successfully. You can now customize its name from the dashboard.", buttons=make_main_keyboard())
         return
 
     if state["step"] == "password":
@@ -585,31 +561,29 @@ async def global_text_handler(event):
         try:
             await client.sign_in(password=user_input)
         except PasswordHashInvalidError:
-            await event.reply("❌ كلمة المرور غير صحيحة. أعد إدخال كلمة مرور التحقق بخطوتين.")
+            await event.reply("Incorrect password. Please try again:")
             return
         except Exception as exc:
-            print(f"فشل تحقق كلمة مرور {phone}: {type(exc).__name__}: {exc}")
             await close_login_state(chat_id)
-            await event.reply(f"❌ فشل التحقق: `{type(exc).__name__}`. راجع Logs في Railway.", buttons=make_main_keyboard())
+            await event.reply(f"Password verification failed: {type(exc).__name__}.", buttons=make_main_keyboard())
             return
 
         user = get_user(chat_id)
         if phone not in user["accounts"]:
             user["accounts"].append(phone)
-            save_data()
+            user["account_names"].setdefault(phone, "Z")
+        save_data()
+
         task = asyncio.create_task(account_time_loop(phone, client, chat_id))
         running_accounts[phone] = task
-        me = await client.get_me()
         login_states.pop(chat_id, None)
-        await event.reply(f"✅ تم ربط وتشغيل الحساب بنجاح!\n👤 الحساب: {me.first_name}", buttons=make_main_keyboard())
-
+        await event.reply(f"Account linked and started successfully. You can now customize its name from the dashboard.", buttons=make_main_keyboard())
 
 async def main():
     await bot.start(bot_token=BOT_TOKEN)
-    print("البوت يعمل.")
+    print("Bot is running.")
     await load_saved_sessions()
     await bot.run_until_disconnected()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
